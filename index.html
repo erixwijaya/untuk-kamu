@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💌 Untuk Kamu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Lato:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --rose: #c9324e;
+      --rose-light: #f7c5cf;
+      --rose-pale: #fff0f3;
+      --gold: #c9a96e;
+      --cream: #fffaf4;
+      --deep: #2a0a12;
+      --text: #4a1a26;
+    }
+
+    html { scroll-behavior: smooth; scroll-snap-type: y mandatory; }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ─── CANVAS PETALS ─── */
+    #petal-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── SECTIONS ─── */
+    .scene {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      scroll-snap-align: start;
+      padding: 60px 24px;
+      z-index: 1;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .scene.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── SCENE 1: INTRO ─── */
+    #scene-1 { background: radial-gradient(ellipse at 50% 60%, #ffe8ed 0%, var(--cream) 70%); }
+
+    .heart-big {
+      font-size: clamp(60px, 15vw, 120px);
+      animation: heartbeat 1.5s ease-in-out infinite;
+      display: block;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 4px 20px rgba(201,50,78,0.3));
+    }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      14%       { transform: scale(1.1); }
+      28%       { transform: scale(1); }
+      42%       { transform: scale(1.06); }
+      70%       { transform: scale(1); }
+    }
+
+    .title-main {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 6vw, 4.5rem);
+      font-style: italic;
+      color: var(--rose);
+      text-align: center;
+      line-height: 1.2;
+      text-shadow: 0 2px 15px rgba(201,50,78,0.15);
+    }
+
+    .subtitle {
+      font-size: clamp(0.9rem, 2.5vw, 1.15rem);
+      color: var(--text);
+      opacity: 0.7;
+      margin-top: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .scroll-hint {
+      margin-top: 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      opacity: 0.45;
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      animation: bounce 2s ease-in-out infinite;
+      cursor: pointer;
+    }
+    .scroll-hint::after { content: '↓'; font-size: 1.2rem; }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(8px); }
+    }
+
+    /* ─── SCENE 2: POEM ─── */
+    #scene-2 {
+      background: linear-gradient(160deg, #fff0f3 0%, var(--cream) 100%);
+    }
+
+    .ornament {
+      font-size: 1.8rem;
+      color: var(--gold);
+      margin: 0 12px;
+      opacity: 0.7;
+    }
+
+    .ornament-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+    .ornament-line {
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+
+    .poem {
+      max-width: 520px;
+      text-align: center;
+    }
+    .poem-line {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.05rem, 2.5vw, 1.4rem);
+      line-height: 2;
+      color: var(--text);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .poem-line.show { opacity: 1; transform: translateY(0); }
+    .poem-line em { color: var(--rose); font-style: italic; }
+
+    /* ─── SCENE 3: REASONS ─── */
+    #scene-3 { background: var(--cream); }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 4vw, 2.8rem);
+      color: var(--rose);
+      text-align: center;
+      margin-bottom: 40px;
+      font-style: italic;
+    }
+
+    .reasons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      max-width: 720px;
+      width: 100%;
+    }
+
+    .reason-card {
+      background: #fff;
+      border: 1px solid var(--rose-light);
+      border-radius: 16px;
+      padding: 24px 20px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(201,50,78,0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .reason-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(201,50,78,0.15);
+    }
+    .reason-card .icon { font-size: 2rem; margin-bottom: 10px; display: block; }
+    .reason-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: var(--rose);
+      margin-bottom: 6px;
+    }
+    .reason-card p { font-size: 0.88rem; color: var(--text); opacity: 0.75; line-height: 1.6; }
+
+    /* ─── SCENE 4: QUOTE ─── */
+    #scene-4 {
+      background: radial-gradient(ellipse at 30% 50%, #2a0a12 0%, #1a0509 100%);
+    }
+
+    .big-quote {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+      font-style: italic;
+      color: #fff;
+      text-align: center;
+      max-width: 600px;
+      line-height: 1.7;
+      position: relative;
+      padding: 0 24px;
+    }
+    .big-quote::before, .big-quote::after {
+      content: '"';
+      font-size: 6rem;
+      color: var(--gold);
+      opacity: 0.3;
+      position: absolute;
+      font-style: normal;
+      line-height: 1;
+    }
+    .big-quote::before { top: -20px; left: -10px; }
+    .big-quote::after  { content: '"'; bottom: -50px; right: -10px; }
+
+    .quote-name {
+      margin-top: 48px;
+      color: var(--gold);
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    /* ─── FLOATING HEARTS (scene 4 deco) ─── */
+    .hearts-deco {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .h-deco {
+      position: absolute;
+      color: rgba(201,50,78,0.15);
+      font-size: 1.5rem;
+      animation: floatUp linear infinite;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.3; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ─── SCENE 5: PROPOSAL ─── */
+    #scene-5 {
+      background: radial-gradient(ellipse at 50% 40%, #fff0f3 0%, var(--cream) 80%);
+    }
+
+    .ring-container {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin-bottom: 32px;
+    }
+    .ring-svg { width: 120px; height: 120px; animation: spin 6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .ring-gem {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      font-size: 2.2rem;
+      animation: shimmer 2s ease-in-out infinite alternate;
+    }
+    @keyframes shimmer {
+      from { filter: drop-shadow(0 0 6px rgba(201,169,110,0.6)); transform: translate(-50%,-50%) scale(1); }
+      to   { filter: drop-shadow(0 0 20px rgba(201,169,110,1));   transform: translate(-50%,-50%) scale(1.12); }
+    }
+
+    .proposal-text {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 5vw, 3rem);
+      color: var(--rose);
+      text-align: center;
+      font-style: italic;
+      max-width: 560px;
+      line-height: 1.4;
+      margin-bottom: 48px;
+    }
+
+    /* ─── BUTTONS ─── */
+    .btn-group {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+      position: relative;
+    }
+
+    .btn-yes {
+      background: linear-gradient(135deg, var(--rose), #e8536e);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      cursor: pointer;
+      padding: 16px 44px;
+      font-size: 1.2rem;
+      box-shadow: 0 6px 24px rgba(201,50,78,0.4);
+      transition: transform 0.2s, box-shadow 0.2s, font-size 0.4s ease, padding 0.4s ease;
+    }
+    .btn-yes:hover {
+      transform: scale(1.06);
+      box-shadow: 0 10px 35px rgba(201,50,78,0.5);
+    }
+    .btn-yes:active { transform: scale(0.97); }
+
+    .btn-no {
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid rgba(74,26,38,0.3);
+      border-radius: 50px;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      padding: 14px 36px;
+      font-size: 1rem;
+      transition: opacity 0.3s;
+      position: relative;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .btn-no:hover { opacity: 0.7; }
+
+    /* ─── SCENE 6: CELEBRATION ─── */
+    #scene-6 {
+      display: none;
+      background: radial-gradient(ellipse at 50% 50%, #fff0f3 0%, var(--cream) 100%);
+    }
+    #scene-6.active {
+      display: flex;
+    }
+
+    .celebration-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 7vw, 4.5rem);
+      font-style: italic;
+      color: var(--rose);
+      text-align: center;
+      animation: popIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.5); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+    .celebration-sub {
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      color: var(--text);
+      opacity: 0.7;
+      text-align: center;
+      margin-top: 16px;
+      max-width: 460px;
+    }
+    .confetti-emoji {
+      font-size: 3rem;
+      animation: spin 2s linear infinite;
+      display: inline-block;
+    }
+
+    /* ─── DECORATIVE LINES ─── */
+    .deco-border {
+      border-top: 1px solid var(--rose-light);
+      width: 80px;
+      margin: 28px auto;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 480px) {
+      .btn-group { gap: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="petal-canvas"></canvas>
+
+<!-- ════════ SCENE 1: OPENING ════════ -->
+<section class="scene" id="scene-1">
+  <span class="heart-big">❤️</span>
+  <h1 class="title-main">Untuk Kamu,<br>Cinta Hidupku</h1>
+  <p class="subtitle">Sebuah pesan dari lubuk hatiku</p>
+  <div class="scroll-hint" onclick="document.getElementById('scene-2').scrollIntoView({behavior:'smooth'})">Gulir ke bawah</div>
+</section>
+
+<!-- ════════ SCENE 2: POEM ════════ -->
+<section class="scene" id="scene-2">
+  <div class="ornament-row">
+    <div class="ornament-line"></div>
+    <span class="ornament">✦</span>
+    <div class="ornament-line"></div>
+  </div>
+  <div class="poem" id="poem-container">
+    <p class="poem-line">Dalam setiap pagi yang ku buka mata,</p>
+    <p class="poem-line">Wajahmu adalah <em>cahaya</em> yang pertama.</p>
+    <p class="poem-line" style="margin-top:16px">Dalam setiap malam yang sunyi dan hening,</p>
+    <p class="poem-line">Namamu adalah <em>doa</em> yang paling ku inginkan.</p>
+    <p class="poem-line" style="margin-top:16px">Kamu bukan sekadar seseorang yang ku kenal,</p>
+    <p class="poem-line">Kamu adalah <em>rumah</em> yang selalu ku rindukan.</p>
+  </div>
+  <div class="ornament-row" style="margin-top:32px">
+    <div class="ornament-line"></div>
+    <span class="ornament">✦</span>
+    <div class="ornament-line"></div>
+  </div>
+</section>
+
+<!-- ════════ SCENE 3: REASONS ════════ -->
+<section class="scene" id="scene-3">
+  <h2 class="section-title">Mengapa Aku Mencintaimu</h2>
+  <div class="reasons-grid">
+    <div class="reason-card">
+      <span class="icon">🌸</span>
+      <h3>Senyumanmu</h3>
+      <p>Setiap kali kamu tersenyum, dunia terasa jauh lebih indah dariku bayangkan.</p>
+    </div>
+    <div class="reason-card">
+      <span class="icon">🌙</span>
+      <h3>Hati yang Baik</h3>
+      <p>Kebaikan hatimu menyentuh setiap orang di sekitarmu, termasuk aku yang selalu takjub.</p>
+    </div>
+    <div class="reason-card">
+      <span class="icon">⭐</span>
+      <h3>Keberanianmu</h3>
+      <p>Kamu menghadapi hidup dengan kekuatan yang membuatku bangga setiap harinya.</p>
+    </div>
+    <div class="reason-card">
+      <span class="icon">🦋</span>
+      <h3>Tawamu</h3>
+      <p>Tawamu adalah melodi terindah yang pernah kudengar sepanjang hidupku.</p>
+    </div>
+    <div class="reason-card">
+      <span class="icon">🌹</span>
+      <h3>Caramu Peduli</h3>
+      <p>Perhatianmu kepada orang-orang tersayang membuatku jatuh cinta berkali-kali.</p>
+    </div>
+    <div class="reason-card">
+      <span class="icon">💫</span>
+      <h3>Kehadiranmu</h3>
+      <p>Sekadar hadir di sisiku sudah menjadi alasan terbesar kebahagiaanku.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SCENE 4: QUOTE ════════ -->
+<section class="scene" id="scene-4">
+  <div class="hearts-deco" id="hearts-deco"></div>
+  <p class="big-quote">
+    Aku tidak berjanji untuk menjadi sempurna, tapi aku berjanji untuk mencintaimu sepenuhnya — hari demi hari, selamanya.
+  </p>
+  <p class="quote-name">— Dari Hatiku, Untukmu</p>
+</section>
+
+<!-- ════════ SCENE 5: PROPOSAL ════════ -->
+<section class="scene" id="scene-5">
+  <div class="ring-container">
+    <svg class="ring-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="60" cy="60" r="50" stroke="#c9a96e" stroke-width="1.5" stroke-dasharray="8 5" />
+      <circle cx="60" cy="60" r="40" stroke="#c9324e" stroke-width="1" stroke-dasharray="4 8" />
+    </svg>
+    <div class="ring-gem">💍</div>
+  </div>
+  <p class="proposal-text">
+    Maukah kamu menjadi bagian dari setiap hari yang tersisa dalam hidupku?
+  </p>
+  <div class="btn-group" id="btn-group">
+    <button class="btn-yes" id="btn-yes" onclick="celebrate()">Ya, Aku Mau 💕</button>
+    <button class="btn-no"  id="btn-no">Tidak…</button>
+  </div>
+</section>
+
+<!-- ════════ SCENE 6: CELEBRATION ════════ -->
+<section class="scene" id="scene-6">
+  <span style="font-size:4rem;margin-bottom:16px">🎉</span>
+  <h2 class="celebration-title">Kita Akan Bersama Selamanya!</h2>
+  <div class="deco-border"></div>
+  <p class="celebration-sub">
+    Terima kasih telah memilihku. Aku berjanji akan menjadi orang yang paling bersyukur memilikimu setiap hari.
+  </p>
+  <span style="font-size:2.5rem;margin-top:32px;display:block;animation:heartbeat 1.5s ease-in-out infinite">❤️</span>
+</section>
+
+<script>
+/* ══════════════════════════════
+   FALLING PETALS CANVAS
+══════════════════════════════ */
+const canvas = document.getElementById('petal-canvas');
+const ctx    = canvas.getContext('2d');
+
+let petals = [];
+const PETAL_COUNT = 35;
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+function randBetween(a, b) { return a + Math.random() * (b - a); }
+
+const PETAL_EMOJIS = ['🌸', '🌹', '❤️', '🌺', '💗'];
+
+function spawnPetal() {
+  return {
+    x: randBetween(0, canvas.width),
+    y: randBetween(-80, -10),
+    emoji: PETAL_EMOJIS[Math.floor(Math.random() * PETAL_EMOJIS.length)],
+    size: randBetween(14, 26),
+    speed: randBetween(0.8, 2.2),
+    drift: randBetween(-0.5, 0.5),
+    rot: 0,
+    rotSpeed: randBetween(-0.02, 0.02),
+    opacity: randBetween(0.35, 0.75),
+  };
+}
+
+for (let i = 0; i < PETAL_COUNT; i++) {
+  const p = spawnPetal();
+  p.y = randBetween(0, window.innerHeight);
+  petals.push(p);
+}
+
+function animatePetals() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (const p of petals) {
+    ctx.save();
+    ctx.globalAlpha = p.opacity;
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
+    ctx.font = `${p.size}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(p.emoji, 0, 0);
+    ctx.restore();
+    p.y   += p.speed;
+    p.x   += p.drift;
+    p.rot += p.rotSpeed;
+    if (p.y > canvas.height + 40) {
+      Object.assign(p, spawnPetal());
+    }
+  }
+  requestAnimationFrame(animatePetals);
+}
+animatePetals();
+
+/* ══════════════════════════════
+   INTERSECTION OBSERVER — scene reveal
+══════════════════════════════ */
+const scenes = document.querySelectorAll('.scene');
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      if (e.target.id === 'scene-2') revealPoem();
+    }
+  });
+}, { threshold: 0.35 });
+scenes.forEach(s => obs.observe(s));
+
+/* ══════════════════════════════
+   POEM REVEAL
+══════════════════════════════ */
+function revealPoem() {
+  const lines = document.querySelectorAll('.poem-line');
+  lines.forEach((l, i) => {
+    setTimeout(() => l.classList.add('show'), i * 350 + 200);
+  });
+}
+
+/* ══════════════════════════════
+   FLOATING HEARTS (scene 4)
+══════════════════════════════ */
+const decoContainer = document.getElementById('hearts-deco');
+const decoEmojis = ['❤️','💕','🌹','💗','✨','🌸'];
+for (let i = 0; i < 18; i++) {
+  const h = document.createElement('span');
+  h.className = 'h-deco';
+  h.textContent = decoEmojis[i % decoEmojis.length];
+  h.style.left  = `${Math.random() * 100}%`;
+  h.style.animationDuration  = `${4 + Math.random() * 6}s`;
+  h.style.animationDelay     = `${Math.random() * 6}s`;
+  h.style.fontSize = `${1 + Math.random() * 1.5}rem`;
+  decoContainer.appendChild(h);
+}
+
+/* ══════════════════════════════
+   NO BUTTON — grows YES, runs away on hover
+══════════════════════════════ */
+let noCount = 0;
+const btnNo  = document.getElementById('btn-no');
+const btnYes = document.getElementById('btn-yes');
+const btnGroup = document.getElementById('btn-group');
+let isDesktop = window.matchMedia('(pointer:fine)').matches;
+
+const noMessages = [
+  'Tidak…',
+  'Benarkah tidak? 🥺',
+  'Coba pikir lagi…',
+  'Yakin? 😢',
+  'Tolong jangan bilang tidak…',
+  'Hatiku hancur 💔',
+  'Satu kesempatan lagi? 🙏',
+  'Aku akan menunggu selamanya…',
+  'Baiklah… satu kali lagi? 😭',
+];
+
+function getRandomPos(maxX, maxY) {
+  return {
+    x: Math.floor(Math.random() * maxX),
+    y: Math.floor(Math.random() * maxY),
+  };
+}
+
+/* Mobile: on click, grow YES and update message */
+btnNo.addEventListener('click', () => {
+  if (isDesktop) return;
+  noCount++;
+  const yesSize = parseFloat(getComputedStyle(btnYes).fontSize);
+  btnYes.style.fontSize   = (yesSize + 1.5) + 'px';
+  btnYes.style.padding    = `${16 + noCount * 2}px ${44 + noCount * 4}px`;
+  btnNo.textContent = noMessages[Math.min(noCount, noMessages.length - 1)];
+});
+
+/* Desktop: move NO away from cursor */
+if (isDesktop) {
+  btnNo.addEventListener('mousemove', (e) => {
+    const rect   = btnGroup.getBoundingClientRect();
+    const groupW = rect.width;
+    const groupH = rect.height;
+    let nx, ny, attempts = 0;
+    do {
+      nx = Math.random() * (groupW - 100);
+      ny = Math.random() * (groupH + 60) - 30;
+      attempts++;
+    } while (attempts < 10);
+    btnNo.style.position  = 'absolute';
+    btnNo.style.left      = nx + 'px';
+    btnNo.style.top       = ny + 'px';
+    noCount++;
+    const yesSize = parseFloat(getComputedStyle(btnYes).fontSize);
+    btnYes.style.fontSize = Math.min(yesSize + 0.3, 2.2) + 'px';
+    btnNo.textContent = noMessages[Math.min(noCount, noMessages.length - 1)];
+  });
+  btnGroup.style.position = 'relative';
+  btnGroup.style.minHeight = '120px';
+}
+
+/* ══════════════════════════════
+   CELEBRATE
+══════════════════════════════ */
+function celebrate() {
+  const s5 = document.getElementById('scene-5');
+  const s6 = document.getElementById('scene-6');
+  s6.classList.add('active');
+  s6.classList.add('visible');
+  s6.scrollIntoView({ behavior: 'smooth' });
+  launchConfetti();
+}
+
+function launchConfetti() {
+  const emojis = ['🎉','🎊','❤️','💕','🌹','✨','💍','🥂'];
+  for (let i = 0; i < 60; i++) {
+    setTimeout(() => {
+      const e = document.createElement('span');
+      e.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      e.style.cssText = `
+        position: fixed;
+        left: ${Math.random() * 100}vw;
+        top: -40px;
+        font-size: ${1 + Math.random() * 1.5}rem;
+        pointer-events: none;
+        z-index: 9999;
+        animation: confettiFall ${2 + Math.random() * 3}s linear forwards;
+      `;
+      document.body.appendChild(e);
+      setTimeout(() => e.remove(), 5000);
+    }, i * 80);
+  }
+}
+
+const styleEl = document.createElement('style');
+styleEl.textContent = `
+  @keyframes confettiFall {
+    to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+`;
+document.head.appendChild(styleEl);
+</script>
+</body>
+</html>
